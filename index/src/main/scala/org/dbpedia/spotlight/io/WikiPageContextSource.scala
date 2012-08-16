@@ -22,6 +22,7 @@ import org.dbpedia.extraction.sources.{Source, XMLSource}
 import org.dbpedia.spotlight.string.WikiMarkupStripper
 import org.dbpedia.extraction.wikiparser._
 import org.dbpedia.spotlight.model.{DBpediaResource, Text, WikiPageContext}
+import org.dbpedia.spotlight.string.ModifiedWikiUtil
 
 /**
  * Created by IntelliJ IDEA.
@@ -71,7 +72,7 @@ object WikiPageContextSource
                 if (!pageNode.isRedirect && !pageNode.isDisambiguation)
                 {
                     val pageContext = new Text( getPageText(pageNode) )
-                    val resource = new DBpediaResource(pageNode.title.encoded)
+                    val resource = new DBpediaResource(ModifiedWikiUtil.wikiEncode(pageNode.title.decoded))
                     f( new WikiPageContext(resource, pageContext) )
                 }
             }

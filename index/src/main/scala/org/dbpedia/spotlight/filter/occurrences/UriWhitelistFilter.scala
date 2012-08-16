@@ -30,10 +30,14 @@ import java.io.File
 class UriWhitelistFilter(val whitelistedUris : Set[String]) extends OccurrenceFilter {
 
     def touchOcc(occ : DBpediaResourceOccurrence) : Option[DBpediaResourceOccurrence] = {
+	val LOG = LogFactory.getLog(this.getClass)
+	//LOG.info("Comprobando " + occ.resource.uri)
         if(whitelistedUris contains occ.resource.uri) {
+	    //LOG.info("Dentro")
             Some(occ)
         }
         else {
+	    //LOG.info("FUERA")
             None
         }
     }

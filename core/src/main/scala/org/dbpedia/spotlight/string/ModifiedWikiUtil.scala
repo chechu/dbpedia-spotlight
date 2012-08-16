@@ -59,15 +59,24 @@ object ModifiedWikiUtil {
         encoded = encoded.capitalize
 
         // URL-encode everything but '/' and ':' - just like MediaWiki
-        encoded = URLEncoder.encode(encoded, "UTF-8");
-        encoded = encoded.replace("%3A", ":");
-        encoded = encoded.replace("%2F", "/");
-        encoded = encoded.replace("%26", "&");
-        encoded = encoded.replace("%2C", ",");
+        // encoded = URLEncoder.encode(encoded, "UTF-8");
+        encoded = encoded.replace("%22", "\"").
+								replace("%23", "#").
+								replace("%3C", "<").
+								replace("%3E", ">").
+								replace("%3F", "?").
+								replace("%5B", "[").
+								replace("%5C", "\\").
+								replace("%5D", "]").
+								replace("%5E", "^").
+								replace("%60", "`").
+								replace("%7B", "{").
+								replace("%7C", "|").
+								replace("%7D", "}");
 
         return encoded;
     }
-
+    
     def wikiDecode(name : String) : String =
     {
         var decoded = "";

@@ -23,6 +23,11 @@ import org.dbpedia.extraction.sources.{Source, XMLSource}
 import org.apache.commons.logging.LogFactory
 import java.io.{File}
 import xml.{XML, Elem}
+import java.util.Locale
+import org.dbpedia.extraction.util.WikiUtil
+import org.dbpedia.extraction.util.Language
+import org.dbpedia.extraction.util.StringUtils
+import org.dbpedia.spotlight.string.ModifiedWikiUtil
 
 /**
  * Loads Occurrences from a wiki dump.
@@ -69,7 +74,7 @@ object AllOccurrenceSource
     private class AllOccurrenceSource(wikiPages : Source, multiplyDisambigs : Int=MULTIPLY_DISAMBIGUATION_CONTEXT) extends OccurrenceSource
     {
         val wikiParser = WikiParser()
-
+        
         override def foreach[U](f : DBpediaResourceOccurrence => U) : Unit =
         {
             var pageCount = 0
@@ -97,7 +102,8 @@ object AllOccurrenceSource
                     for (listItem <- listItems)
                     {
                         itemsCount += 1
-                        val id = pageNode.title.encoded+"-pl"+itemsCount
+//LOG.info("Extra: " + ModifiedWikiUtil.wikiEncode(pageNode.title.decoded))
+                        val id = ModifiedWikiUtil.wikiEncode(pageNode.title.decoded)+"-pl"+itemsCount
                         DisambiguationContextSource.getOccurrence(listItem, surfaceForm, id) match {
                             case Some(occ) => {
                                 (1 to multiplyDisambigs).foreach{i => f( occ )}
@@ -123,7 +129,7 @@ object AllOccurrenceSource
                     var paragraphCount = 0
                     for (paragraph <- paragraphs) {
                         paragraphCount += 1
-                        val idBase = pageNode.title.encoded+"-p"+paragraphCount
+                        val idBase = ModifiedWikiUtil.wikiEncode(pageNode.title.decoded)+"-p"+paragraphCount
                         WikiOccurrenceSource.getOccurrences(paragraph, idBase).foreach{occ =>
                             occCount += 1
                             f(occ)
@@ -131,12 +137,17 @@ object AllOccurrenceSource
                     }
 
                     // Definition a.k.a. WikiPageContext
-                    val resource = new DBpediaResource(pageNode.title.encoded)
+                    val titleEncoded = ModifiedWikiUtil.wikiEncode(pageNode.title.decoded)
+
+//LOG.info("Considerando el título: " + pageNode.title.decoded)
+//LOG.info("titleEncoded: " + titleEncoded)
+
+                    val resource = new DBpediaResource(titleEncoded)
                     val surfaceForm = new SurfaceForm(pageNode.title.decoded.replaceAll(""" \(.+?\)$""", "")
                                                                             .replaceAll("""^(The|A) """, ""))
                     val pageContext = new Text( WikiPageContextSource.getPageText(pageNode) )
                     val offset = pageContext.text.indexOf(surfaceForm.name)
-                    f( new DBpediaResourceOccurrence(pageNode.title.encoded+"-", resource, surfaceForm, pageContext, offset, Provenance.Wikipedia) )
+                    f( new DBpediaResourceOccurrence(ModifiedWikiUtil.wikiEncode(pageNode.title.decoded)+"-", resource, surfaceForm, pageContext, offset, Provenance.Wikipedia) )
 
                 }
 

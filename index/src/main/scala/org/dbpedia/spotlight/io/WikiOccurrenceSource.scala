@@ -23,6 +23,7 @@ import org.dbpedia.extraction.sources.{Source, XMLSource}
 import org.apache.commons.logging.LogFactory
 import java.io.{PrintStream, FileOutputStream, File}
 import xml.{XML, Elem}
+import org.dbpedia.spotlight.string.ModifiedWikiUtil
 
 /**
  * Loads Occurrences from a wiki dump.
@@ -89,7 +90,7 @@ object WikiOccurrenceSource
                     for (paragraph <- paragraphs)
                     {
                         paragraphCount += 1
-                        val idBase = pageNode.title.encoded+"-p"+paragraphCount
+                        val idBase = ModifiedWikiUtil.wikiEncode(pageNode.title.decoded)+"-p"+paragraphCount
                         getOccurrences(paragraph, idBase).foreach{occ => occCount += 1
                                                                          f(occ)}
                     }
@@ -130,7 +131,7 @@ object WikiOccurrenceSource
                     paragraphText += surfaceForm
 
                     if (internalLink.destination.namespace == WikiTitle.Namespace.Main && surfaceForm.nonEmpty) {
-                        occurrenceTriples ::= new Tuple3(internalLink.destination.encoded, surfaceForm, surfaceFormOffset)
+                        occurrenceTriples ::= new Tuple3(ModifiedWikiUtil.wikiEncode(internalLink.destination.decoded), surfaceForm, surfaceFormOffset)
                     }
                 }
                 case _ =>

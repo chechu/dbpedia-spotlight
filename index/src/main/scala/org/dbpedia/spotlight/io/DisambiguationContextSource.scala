@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory
 import java.io.{File}
 import xml.{XML, Elem}
 import org.dbpedia.extraction.mappings.DisambiguationExtractor
+import org.dbpedia.spotlight.string.ModifiedWikiUtil
 
 /**
  * Loads descriptive text that occurs around entries in disambiguation pages from a wiki dump.
@@ -97,7 +98,7 @@ object DisambiguationContextSource
                     for (listItem <- listItems)
                     {
                         itemsCount += 1
-                        val id = pageNode.title.encoded+"-pl"+itemsCount
+                        val id = ModifiedWikiUtil.wikiEncode(pageNode.title.decoded)+"-pl"+itemsCount
                         getOccurrence(listItem, surfaceForm, id) match {
                             case Some(occ) => (1 to multiply).foreach(i => f( occ )) ; occCount += 1
                             case None =>
@@ -138,7 +139,7 @@ object DisambiguationContextSource
                 // if the link points to a page in the Main namespace
                 case internalLink : InternalLinkNode => {
                     if (uri.isEmpty && isDisambiguationUri(internalLink.destination, surfaceForm)) {
-                        uri = internalLink.destination.encoded
+                        uri = ModifiedWikiUtil.wikiEncode(internalLink.destination.decoded)
                     }
                     disambiguationText += internalLink.children.collect{ case TextNode(text, _) => WikiMarkupStripper.stripMultiPipe(text) }.mkString("")
                 }
