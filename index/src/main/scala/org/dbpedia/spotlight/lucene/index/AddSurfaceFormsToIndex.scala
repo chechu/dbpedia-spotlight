@@ -70,7 +70,7 @@ object AddSurfaceFormsToIndex
             alternatives.add(sf.substring(0,sf.length()-1).trim())
         }
         //alternatives.add(sf.replaceAll("[^A-Za-z0-9 ]", " ").trim()) // may be problematic with accents
-        alternatives.add(sf.replaceAll("[\\^`~!@\\#$%*()_+-={}\\[\\]\\|/\\\\,\\.<>\\?/'\":;]", " ").trim()) //TODO TEST
+        alternatives.add(sf.replaceAll("[\\^`~!@\\#$%*()_+\\-={}\\[\\]\\|/\\\\,\\.<>\\?/'\":;]", " ").trim()) //TODO TEST
         alternatives.toList
     }
 
